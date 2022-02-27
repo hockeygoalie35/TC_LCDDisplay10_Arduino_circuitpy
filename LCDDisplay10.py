@@ -193,12 +193,11 @@ class LCDDisplay10:
 
     def blink(self, mode: int, freq: int) -> None:
         """
-            A single byte
             01110xyy
             X flash mode (0 normal, 1 alternative)
             yy frequency (00 off - 01: 2Hz - 10: 1Hz - 11: 0.5Hz)
         """
         mode = mode << 2
-        command = 0b01110000 | (mode & 4) | (freq & 0x03)
+        command = 0b01110000 | (mode & 0x04) | (freq & 0x03)
         n_ack = self._i2c.writeto(self.DEVICE_ADDR, bytes([command]))
 
