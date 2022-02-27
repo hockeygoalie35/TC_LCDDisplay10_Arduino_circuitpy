@@ -64,15 +64,15 @@ class LCDDisplay10:
 
     DEVICE_ADDR = 0x38
 
-    def __init__(self, i2c):
+    def __init__(self, i2c: I2C):
         self._i2c = i2c
         self._buffer = []
 
-    def fillDigits(self, c):
+    def fillDigits(self, c: str) -> None:
         for i in range(self.DIGITS):
             self._buffer[i] = c
 
-    def write_to_buffer(self, number: str) -> bool:
+    def write_to_buffer(self, number:str) -> bool:
         cur_pos = 0
         n_len = 0
         write_buffer = [0] * self.DIGITS
@@ -120,7 +120,7 @@ class LCDDisplay10:
 
         return True
 
-    def send_command(self, command, val):
+    def send_command(self, command: str, val: str) -> None:
         n_ack = self._i2c.writeto(self.DEVICE_ADDR,bytes([command,val]))
 
     def reset(self) -> None:
@@ -128,12 +128,12 @@ class LCDDisplay10:
         time.sleep_ms(3)
         self.send_command(0xe0, 0x70)
 
-    def print_to_lcd(self, number: str):
+    def print_to_lcd(self, number: str) -> None:
         res = self.write_to_buffer(number)
         if (res):
             self.send_buffer();
 
-    def fill(self, c:str):
+    def fill(self, c: str) -> None:
         self._buffer.clear()
         for i in range(self.BUFFER_SIZE):
             self._buffer.append(c)
@@ -144,32 +144,32 @@ class LCDDisplay10:
         else:
             self._buffer[self.FLAGS] = self._buffer[self.FLAGS] and not self.SEG_Mem
 
-    def set_negative(self, negative_flag):
+    def set_negative(self, negative_flag: bool) -> None:
         if negative_flag:
             self._buffer[self.FLAGS] = self._buffer[self.FLAGS] | self.SEG_Min
         else:
             self._buffer[self.FLAGS] = self._buffer[self.FLAGS] & ~self.SEG_Min;
 
-    def set_error(self, error_flag):
+    def set_error(self, error_flag: bool) -> None:
         if error_flag:
             self._buffer[self.FLAGS] = self._buffer[self.FLAGS] | self.SEG_Err
         else:
             self._buffer[self.FLAGS] = self._buffer[self.FLAGS] & ~self.SEG_Err;
 
-    def set_digit(self, pos, value):
+    def set_digit(self, pos: int, value: str) -> None:
         if pos < self.DIGITS:
             if value >= 0 and value <= 9:
                 self._buffer[pos] = self._buffer[pos] & self.SEG_P  | self.DIGIT_SEGMENTS[value]
             else:
                  self._buffer[pos] = 0
 
-    def set_point_pos(self, pos):
+    def set_point_pos(self, pos: int) -> None:
         if pos < self.DIGITS:
             for dp in range(2, self.DIGITS):
                 self._buffer[dp] =  self._buffer[dp] & ~self.SEG_P;
             self._buffer[pos + 2] |= self.SEG_P
 
-    def set_thousands(self, n):
+    def set_thousands(self, n: int):
         on_bits = 0
         off_bits = 0
         for i in range(self.TS_SIZE):
@@ -184,9 +184,20 @@ class LCDDisplay10:
         old_value = self._buffer[self.FLAGS + 1];
         self._buffer[self.FLAGS + 1] = (old_value | (on_bits & 0xff)) & (off_bits & 0xff);
 
-    def clear(self):
+    def clear(self) -> None:
         self.fill(0)
         self.send_buffer()
 
-    def send_buffer(self):
+    def send_buffer(self) -> None:
         n_ack = self._i2c.writeto(self.DEVICE_ADDR, bytearray(self._buffer))
+
+    def blink(self, mode: int, freq: int) -> None:
+        """
+            A single byte
+            01111xyy
+            X flash mode (0 normal, 1 alternative)
+            Yy frequency (00 off)
+        """
+
+        pass
+
