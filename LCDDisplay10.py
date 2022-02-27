@@ -1,4 +1,5 @@
 # Ported to micropy from https://github.com/turing-complete-labs/LCDDisplay10_Arduino
+# Datasheet: https://www.belling.com.cn/media/file_object/bel_product/BL55077/datasheet/BL55077(A)_E_V1.0.pdf
 
 import time
 
@@ -76,7 +77,6 @@ class LCDDisplay10:
         cur_pos = 0
         n_len = 0
         write_buffer = [0] * self.DIGITS
-
         self.fill(0) # added
         number_as_a_list = list(number)
 
@@ -194,10 +194,11 @@ class LCDDisplay10:
     def blink(self, mode: int, freq: int) -> None:
         """
             A single byte
-            01111xyy
+            01110xyy
             X flash mode (0 normal, 1 alternative)
-            Yy frequency (00 off)
+            yy frequency (00 off - 01: 2Hz - 10: 1Hz - 11: 0.5Hz)
         """
-
-        pass
+        mode = mode << 2
+        command = 0b01110000 | (mode & 4) | (freq & 0x03)
+        n_ack = self._i2c.writeto(self.DEVICE_ADDR, bytes([command]))
 

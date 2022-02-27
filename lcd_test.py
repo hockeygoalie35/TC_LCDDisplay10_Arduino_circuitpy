@@ -22,6 +22,9 @@ def setup():
     display.set_error(True)
     display.send_buffer()
     time.sleep_ms(2000)
+    display.blink(0,1)
+    time.sleep_ms(1000)
+    display.blink(0,0)
 
 
 def loop():
