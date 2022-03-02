@@ -63,6 +63,11 @@ class LCDDisplay10:
 
     TS_INDEX = [T_1, T_2, T_3, T_4, T_5, T_6, T_7];
 
+    NO_BLINK = 0
+    BLINK_FAST = 1
+    BLINK_NORMAL = 2
+    BLINK_SLOW = 3
+
     DEVICE_ADDR = 0x38
 
     def __init__(self, i2c: I2C):
@@ -191,13 +196,10 @@ class LCDDisplay10:
     def send_buffer(self) -> None:
         n_ack = self._i2c.writeto(self.DEVICE_ADDR, bytearray(self._buffer))
 
-    def blink(self, mode: int, freq: int) -> None:
+    def set_blink(self, freq: int) -> None:
         """
-            01110xyy
-            X flash mode (0 normal, 1 alternative)
-            yy frequency (00 off - 01: 2Hz - 10: 1Hz - 11: 0.5Hz)
+            freq: frequency (00 off - 01: 2Hz - 10: 1Hz - 11: 0.5Hz)
         """
-        mode = mode << 2
-        command = 0b01110000 | (mode & 0x04) | (freq & 0x03)
+        command = 0b01110000 | (freq & 0x03)
         n_ack = self._i2c.writeto(self.DEVICE_ADDR, bytes([command]))
 

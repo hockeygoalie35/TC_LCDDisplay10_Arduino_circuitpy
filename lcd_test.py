@@ -21,10 +21,15 @@ def setup():
     display.set_negative(True)
     display.set_error(True)
     display.send_buffer()
-    time.sleep_ms(2000)
-    display.blink(0,1)
-    time.sleep_ms(1000)
-    display.blink(0,0)
+    time.sleep_ms(4000)
+    display.set_blink(display.BLINK_FAST)
+    time.sleep_ms(4000)
+    display.set_blink(display.BLINK_NORMAL)
+    time.sleep_ms(4000)
+    display.set_blink(display.BLINK_SLOW)
+    time.sleep_ms(4000)
+    display.set_blink(display.NO_BLINK)
+    time.sleep_ms(4000)
 
 
 def loop():
