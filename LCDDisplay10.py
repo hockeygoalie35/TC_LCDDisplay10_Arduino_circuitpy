@@ -130,7 +130,7 @@ class LCDDisplay10:
 
     def reset(self) -> None:
         self.send_command(0xe0, 0x48)
-        time.sleep_ms(3)
+        time.sleep(.003)
         self.send_command(0xe0, 0x70)
 
     def print_to_lcd(self, number: str) -> None:

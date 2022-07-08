@@ -1,14 +1,19 @@
 # Tested on Arduino NanoRP2040 Connect
 
-from machine import I2C, Pin
-import time
 
+import board
+import busio
+import time
 import LCDDisplay10
 
+
+
 # Create an I2C object out of our SDA and SCL pin objects
-sda_pin = Pin(12) # GPIO12, A4, D18, STEMMA QT - blue wire (for Arduino NanoRP2040 Connect)
-scl_pin = Pin(13) # GPIO13, A5, D19, STEMMA QT - yellow wire (for Arduino NanoRP2040 Connect)
-i2c = machine.I2C(id=0, scl=scl_pin, sda=sda_pin, freq=10000)
+i2c = board.I2C()
+i2c.try_lock()
+print([hex(device_address) for device_address in i2c.scan()])
+
+
 # i2c = machine.SoftI2C(scl=scl_pin, sda=sda_pin, freq=400_000)
 display = LCDDisplay10.LCDDisplay10(i2c)
 
@@ -21,21 +26,21 @@ def setup():
     display.set_negative(True)
     display.set_error(True)
     display.send_buffer()
-    time.sleep_ms(4000)
+    time.sleep(4)
     display.set_blink(display.BLINK_FAST)
-    time.sleep_ms(4000)
+    time.sleep(4)
     display.set_blink(display.BLINK_NORMAL)
-    time.sleep_ms(4000)
+    time.sleep(4)
     display.set_blink(display.BLINK_SLOW)
-    time.sleep_ms(4000)
+    time.sleep(4)
     display.set_blink(display.NO_BLINK)
-    time.sleep_ms(4000)
+    time.sleep(4)
 
 
 def loop():
   flag = True
   display.clear()
-  time.sleep_ms(1000)
+  time.sleep(1)
   display.print_to_lcd("1234567890")
   display.set_memory(flag)
   display.set_negative(flag)
@@ -48,10 +53,9 @@ def loop():
   for i in range(10):
     display.set_point_pos(i)
     display.send_buffer()
-    time.sleep_ms(1000)
-
+    time.sleep(1)
 setup()
 
 while(True):
     loop()
-    time.sleep_ms(1000)
+    time.sleep(1)
